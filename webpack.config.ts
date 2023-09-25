@@ -8,6 +8,7 @@ const src = path.resolve(__dirname, 'src')
 const config: webpack.Configuration = {
   mode: 'development',
   entry: path.join(src, 'main.ts'),
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {
