@@ -1,14 +1,8 @@
-import { Countdown } from './countdown';
+import { CountdownScreen } from './countdown';
+import { GameEngine } from './engine';
 
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
-const countdown = new Countdown(canvas)
-
-function repaint(time: DOMHighResTimeStamp) {
-    const shouldRepaint = countdown.repaint()
-    if (shouldRepaint) {
-        window.requestAnimationFrame(repaint)
-    }
-}
-
-window.requestAnimationFrame(repaint)
+const engine = new GameEngine()
+engine.screens.push(new CountdownScreen(canvas))
+engine.execute()
