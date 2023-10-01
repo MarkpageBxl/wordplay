@@ -1,5 +1,8 @@
+import { GameEngine } from "./engine"
+import { GameState } from "./state"
+
 export interface IScreen {
-    canvas: HTMLCanvasElement
+    engine: GameEngine
 
     init(): void
     updateState(): void

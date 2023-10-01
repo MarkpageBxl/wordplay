@@ -1,15 +1,17 @@
+import { GameEngine } from './engine'
 import { IScreen } from './screen'
+import { GameState } from './state'
 
 export class CountdownScreen implements IScreen {
-    canvas: HTMLCanvasElement
-    limit: number
+    engine: GameEngine
+    duration: number
     startTimer: number = 0
     done: boolean = false
     elapsed: number = 0
 
-    constructor(canvas: HTMLCanvasElement, limit: number = 5) {
-        this.canvas = canvas
-        this.limit = limit
+    constructor(engine: GameEngine, duration: number) {
+        this.engine = engine
+        this.duration = duration
     }
 
     init(): void {
@@ -23,21 +25,21 @@ export class CountdownScreen implements IScreen {
 
     repaint(): void {
         this.updateState()
-        const context = this.canvas.getContext("2d")!;
-        context.font = "8rem serif";
+        const valueDisplayed = Math.ceil(this.duration - this.elapsed)
+        this.engine.canvas.width = window.innerWidth
+        this.engine.canvas.height = window.innerHeight
+        const context = this.engine.canvas.getContext("2d")!;
+        context.font = "5rem serif";
         context.textAlign = "center";
         context.textBaseline = "middle";
-        const valueDisplayed = Math.ceil(this.limit - this.elapsed)
-        this.canvas.width = window.innerWidth
-        this.canvas.height = window.innerHeight
 
         if (valueDisplayed >= 1) {
             this.done = false;
-            context.fillText(valueDisplayed.toString(), this.canvas.width / 2, this.canvas.height / 2);
+            context.fillText(valueDisplayed.toString(), this.engine.canvas.width / 2, this.engine.canvas.height / 2);
             context.strokeStyle = "red"
             context.lineWidth = 15
-            const startAngle = ((this.limit - this.elapsed) % 1) * 2 * Math.PI
-            context.arc(this.canvas.width / 2, this.canvas.height / 2, 100, startAngle, 0)
+            const startAngle = ((this.duration - this.elapsed) % 1) * 2 * Math.PI
+            context.arc(this.engine.canvas.width / 2, this.engine.canvas.height / 2, 100, startAngle, 0)
             context.stroke()
         } else {
             this.done = true;
