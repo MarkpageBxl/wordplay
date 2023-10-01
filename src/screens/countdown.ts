@@ -1,6 +1,6 @@
-import { GameEngine } from './engine'
-import { IScreen } from './screen'
-import { GameState } from './state'
+import { GameEngine } from '../engine'
+import { IScreen } from '../screen'
+import { GameState } from '../state'
 
 export class CountdownScreen implements IScreen {
     engine: GameEngine
@@ -24,10 +24,7 @@ export class CountdownScreen implements IScreen {
     }
 
     repaint(): void {
-        this.updateState()
         const valueDisplayed = Math.ceil(this.duration - this.elapsed)
-        this.engine.canvas.width = window.innerWidth
-        this.engine.canvas.height = window.innerHeight
         const context = this.engine.canvas.getContext("2d")!;
         context.font = "5rem serif";
         context.textAlign = "center";
