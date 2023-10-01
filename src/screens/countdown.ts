@@ -1,5 +1,5 @@
 import { GameEngine } from '../engine'
-import { IScreen } from '../screen'
+import { IScreen } from './screen'
 import { GameState } from '../state'
 
 export class CountdownScreen implements IScreen {
@@ -17,6 +17,9 @@ export class CountdownScreen implements IScreen {
     init(): void {
         this.startTimer = performance.now()
         this.elapsed = 0
+    }
+
+    tearDown(): void {
     }
 
     updateState(): void {

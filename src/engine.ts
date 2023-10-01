@@ -1,6 +1,6 @@
 import { CountdownScreen } from "./screens/countdown";
 import { MainScreen } from "./screens/main";
-import { IScreen } from "./screen";
+import { IScreen } from "./screens/screen";
 import { GameState } from "./state";
 import { ResultScreen } from "./screens/result";
 
@@ -28,7 +28,8 @@ export class GameEngine {
         this.canvas.height = window.innerHeight
         screen.repaint()
         if (screen.isDone()) {
-            this.currentScreenIndex++
+            screen.tearDown()
+            this.currentScreenIndex = (this.currentScreenIndex + 1) % this.screens.length
             if (this.currentScreenIndex >= this.screens.length) {
                 console.log("Game engine stopping: no more screens to handle.")
                 return;

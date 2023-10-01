@@ -1,5 +1,5 @@
 import { GameEngine } from "../engine";
-import { IScreen } from "../screen";
+import { IScreen } from "./screen";
 
 export class MainScreen implements IScreen {
     engine: GameEngine
@@ -16,6 +16,24 @@ export class MainScreen implements IScreen {
     init(): void {
         this.startTimer = performance.now()
         this.elapsed = 0
+        window.addEventListener("keydown", ev => this.onKeydown(ev))
+        window.addEventListener("pointerdown", ev => this.onPointerdown(ev))
+    }
+
+    tearDown(): void {
+        window.removeEventListener("keydown", ev => this.onKeydown(ev))
+        window.removeEventListener("pointerdown", ev => this.onPointerdown(ev))
+    }
+
+    private onKeydown(ev: KeyboardEvent) {
+        switch (ev.code) {
+            case "Enter":
+                this.engine.state.wordIndex++
+        }
+    }
+
+    private onPointerdown(ev: PointerEvent) {
+        this.engine.state.wordIndex++
     }
 
     updateState(): void {
