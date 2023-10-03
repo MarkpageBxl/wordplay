@@ -1,4 +1,5 @@
 import { GameEngine } from "../engine";
+import { shuffle } from "../utils";
 import { IScreen } from "./screen";
 
 export class MainScreen implements IScreen {
@@ -7,13 +8,20 @@ export class MainScreen implements IScreen {
     startTimer: number = 0
     done: boolean = false
     elapsed: number = 0
+    words: string[] = []
 
     constructor(engine: GameEngine, duration: number) {
         this.engine = engine
         this.duration = duration * 1000
     }
 
-    init(): void {
+    async init(): Promise<void> {
+        if (this.words.length == 0) {
+            const response = await fetch('words.json')
+            this.words = await response.json()
+        }
+        shuffle(this.words)
+        this.engine.state.wordIndex = 0
         this.startTimer = performance.now()
         this.elapsed = 0
         window.addEventListener("keydown", ev => this.onKeydown(ev))
@@ -28,6 +36,8 @@ export class MainScreen implements IScreen {
     private onKeydown(ev: KeyboardEvent) {
         switch (ev.code) {
             case "Enter":
+            case "Space":
+            case "ArrowRight":
                 this.engine.state.wordIndex++
         }
     }
@@ -42,10 +52,7 @@ export class MainScreen implements IScreen {
 
     repaint(): void {
         const context = this.engine.canvas.getContext("2d")!;
-        context.font = "5rem serif";
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-
+        this.drawWord(context)
         if (this.elapsed < this.duration) {
             this.done = false;
             this.drawProgressBar(context)
@@ -54,8 +61,21 @@ export class MainScreen implements IScreen {
         }
     }
 
+    private currentWord(): string {
+        return this.words[this.engine.state.wordIndex]
+    }
+
+    private drawWord(context: CanvasRenderingContext2D): void {
+        const fontSize = Math.floor(96 * this.engine.canvas.height / 1080)
+        context.font = `${fontSize}px serif`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillStyle = "black";
+        context.fillText(this.currentWord(), this.engine.canvas.width / 2, this.engine.canvas.height / 2)
+    }
+
     private drawProgressBar(context: CanvasRenderingContext2D): void {
-        const barHeight = 100
+        const barHeight = Math.floor(150 * this.engine.canvas.height / 1080)
         const progress = (this.elapsed / this.duration)
         const barWidth = (1 - progress) * this.engine.canvas.width
         context.fillStyle = "red"

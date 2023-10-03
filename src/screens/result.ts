@@ -9,7 +9,7 @@ export class ResultScreen implements IScreen {
         this.engine = engine
     }
 
-    init(): void {
+    async init(): Promise<void> {
         this.done = false
         setTimeout(() => {
             window.addEventListener("keydown", ev => this.onKeydown(ev))
@@ -20,6 +20,8 @@ export class ResultScreen implements IScreen {
     private onKeydown(ev: KeyboardEvent) {
         switch (ev.code) {
             case "Enter":
+            case "Space":
+            case "ArrowRight":
                 this.done = true
         }
     }
@@ -30,6 +32,7 @@ export class ResultScreen implements IScreen {
 
     tearDown(): void {
         window.removeEventListener("keydown", ev => this.onKeydown(ev))
+        window.removeEventListener("pointerdown", ev => this.onPointerdown(ev))
     }
 
     updateState(): void {
@@ -37,19 +40,16 @@ export class ResultScreen implements IScreen {
 
     repaint(): void {
         const context = this.engine.canvas.getContext("2d")!
-        this.drawProgressBar(context)
-        context.font = "5rem serif"
+        const fontSize = Math.floor(96 * this.engine.canvas.height / 1080)
+        const sep = Math.floor(96 * 3 * this.engine.canvas.height / 1080)
+        context.font = `${fontSize}px serif`;
         context.textAlign = "center"
         context.textBaseline = "middle"
         context.fillStyle = "black"
-        context.fillText("Score: " + this.engine.state.score, this.engine.canvas.width / 2, this.engine.canvas.height / 2)
-    }
-
-    private drawProgressBar(context: CanvasRenderingContext2D): void {
-        const barHeight = 100
-        const barWidth = this.engine.canvas.width
-        context.fillStyle = "red"
-        context.fillRect(0, this.engine.canvas.height - barHeight, barWidth, barHeight)
+        let x = this.engine.canvas.width / 2
+        let y = this.engine.canvas.height / 2
+        context.fillText(`Score : ${this.engine.state.wordIndex}`, x, y - sep)
+        context.fillText(`Vitesse : ${this.engine.state.speed()} mots par minute`, x, y)
     }
 
     isDone(): boolean {

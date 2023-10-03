@@ -16,12 +16,13 @@ export class GameEngine {
         let screen: IScreen = new CountdownScreen(this, 5)
         this.screens.push(screen)
         screen = new MainScreen(this, 15)
+        this.state.duration = 15
         this.screens.push(screen)
         screen = new ResultScreen(this)
         this.screens.push(screen)
     }
 
-    private step(time: DOMHighResTimeStamp): void {
+    private async step(time: DOMHighResTimeStamp): Promise<void> {
         const screen = this.screens[this.currentScreenIndex]
         screen.updateState()
         this.canvas.width = window.innerWidth
@@ -35,17 +36,17 @@ export class GameEngine {
                 return;
             } else {
                 console.debug("Initializing screen " + this.currentScreenIndex)
-                this.screens[this.currentScreenIndex].init()
+                await this.screens[this.currentScreenIndex].init()
             }
         }
-        window.requestAnimationFrame(time => this.step(time))
+        window.requestAnimationFrame(async time => await this.step(time))
     }
 
     execute(): void {
-        window.requestAnimationFrame(time => {
+        window.requestAnimationFrame(async time => {
             console.debug("Initializing screen " + this.currentScreenIndex)
-            this.screens[0].init()
-            this.step(time)
+            await this.screens[0].init()
+            await this.step(time)
         })
         console.log("Game engine running.")
     }
