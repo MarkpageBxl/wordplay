@@ -10,9 +10,8 @@ class MainScreenEventHandler implements EventListenerObject {
     }
 
     handleEvent(event: Event): void {
-        if (event.type === "keydown") {
-            var keyboardEvent = event as KeyboardEvent
-            switch (keyboardEvent.code) {
+        if (event instanceof KeyboardEvent) {
+            switch (event.code) {
                 case "Enter":
                 case "Space":
                 case "ArrowRight":
@@ -23,7 +22,7 @@ class MainScreenEventHandler implements EventListenerObject {
                     break
             }
         }
-        else if (event.type === "pointerdown") {
+        else if (event instanceof PointerEvent) {
             this.owner.engine.state.wordIndex++
         }
     }
