@@ -15,7 +15,7 @@ export class GameEngine {
         this.state = new GameState();
         let screen: IScreen = new CountdownScreen(this, 5)
         this.screens.push(screen)
-        screen = new MainScreen(this, 15)
+        screen = new MainScreen(this)
         this.state.maxDuration = 15
         this.screens.push(screen)
         screen = new ResultScreen(this)

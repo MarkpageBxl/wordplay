@@ -31,16 +31,14 @@ class MainScreenEventHandler implements EventListenerObject {
 
 export class MainScreen implements IScreen {
     engine: GameEngine
-    duration: number
     startTimer: number = 0
     done: boolean = false
     elapsed: number = 0
     words: string[] = []
     eventHandler: MainScreenEventHandler
 
-    constructor(engine: GameEngine, duration: number) {
+    constructor(engine: GameEngine) {
         this.engine = engine
-        this.duration = duration * 1000
         this.eventHandler = new MainScreenEventHandler(this);
     }
 
@@ -72,7 +70,7 @@ export class MainScreen implements IScreen {
             return;
         const context = this.engine.canvas.getContext("2d")!;
         this.drawWord(context)
-        if (this.elapsed < this.duration) {
+        if (this.elapsed < this.engine.state.maxDuration) {
             this.drawProgressBar(context)
         } else {
             this.done = true;
@@ -94,7 +92,7 @@ export class MainScreen implements IScreen {
 
     private drawProgressBar(context: CanvasRenderingContext2D): void {
         const barHeight = Math.floor(150 * this.engine.canvas.height / 1080)
-        const progress = (this.elapsed / this.duration)
+        const progress = (this.elapsed / this.engine.state.maxDuration)
         const barWidth = (1 - progress) * this.engine.canvas.width
         context.fillStyle = "red"
         context.fillRect(0, this.engine.canvas.height - barHeight, barWidth, barHeight)
