@@ -12,11 +12,10 @@ export class GameEngine {
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas
-        this.state = new GameState();
+        this.state = new GameState(15);
         let screen: IScreen = new CountdownScreen(this, 5)
         this.screens.push(screen)
         screen = new MainScreen(this)
-        this.state.maxDuration = 15
         this.screens.push(screen)
         screen = new ResultScreen(this)
         this.screens.push(screen)

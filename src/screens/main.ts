@@ -33,7 +33,7 @@ export class MainScreen implements IScreen {
     engine: GameEngine
     startTimer: number = 0
     done: boolean = false
-    elapsed: number = 0
+    elapsedMs: number = 0
     words: string[] = []
     eventHandler: MainScreenEventHandler
 
@@ -50,7 +50,7 @@ export class MainScreen implements IScreen {
         shuffle(this.words)
         this.engine.state.wordIndex = 0
         this.startTimer = performance.now()
-        this.elapsed = 0
+        this.elapsedMs = 0
         this.done = false
         window.addEventListener("keydown", this.eventHandler);
         window.addEventListener("pointerdown", this.eventHandler)
@@ -62,7 +62,7 @@ export class MainScreen implements IScreen {
     }
 
     updateState(): void {
-        this.elapsed = (performance.now() - this.startTimer)
+        this.elapsedMs = (performance.now() - this.startTimer)
     }
 
     repaint(): void {
@@ -70,7 +70,7 @@ export class MainScreen implements IScreen {
             return;
         const context = this.engine.canvas.getContext("2d")!;
         this.drawWord(context)
-        if (this.elapsed < this.engine.state.maxDuration) {
+        if (this.elapsedMs < this.engine.state.maxDurationMs) {
             this.drawProgressBar(context)
         } else {
             this.done = true;
@@ -92,7 +92,7 @@ export class MainScreen implements IScreen {
 
     private drawProgressBar(context: CanvasRenderingContext2D): void {
         const barHeight = Math.floor(150 * this.engine.canvas.height / 1080)
-        const progress = (this.elapsed / this.engine.state.maxDuration)
+        const progress = (this.elapsedMs / this.engine.state.maxDurationMs)
         const barWidth = (1 - progress) * this.engine.canvas.width
         context.fillStyle = "red"
         context.fillRect(0, this.engine.canvas.height - barHeight, barWidth, barHeight)
@@ -104,6 +104,6 @@ export class MainScreen implements IScreen {
 
     abort(): void {
         this.done = true
-        this.engine.state.actualDuration = this.elapsed / 1000
+        this.engine.state.actualDurationMs = this.elapsedMs
     }
 }

@@ -44,7 +44,7 @@ export class ResultScreen implements IScreen {
     tearDown(): void {
         window.removeEventListener("keydown", this.eventHandler)
         window.removeEventListener("pointerdown", this.eventHandler)
-        this.engine.state.actualDuration = 0
+        this.engine.state.actualDurationMs = 0
     }
 
     updateState(): void {
