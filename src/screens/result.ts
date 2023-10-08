@@ -60,8 +60,8 @@ export class ResultScreen implements IScreen {
         context.fillStyle = "black"
         let x = this.engine.canvas.width / 2
         let y = this.engine.canvas.height / 2
-        context.fillText(`Score : ${this.engine.state.wordIndex}`, x, y - sep)
-        context.fillText(`Vitesse : ${this.engine.state.speed()} mots par minute`, x, y)
+        context.fillText(`${this.engine.state.wordIndex} mots lus`, x, y - sep)
+        context.fillText(`${this.engine.state.speed()} mots/min`, x, y)
     }
 
     isDone(): boolean {
