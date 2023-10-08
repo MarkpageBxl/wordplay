@@ -17,6 +17,10 @@ class MainScreenEventHandler implements EventListenerObject {
                 case "Space":
                 case "ArrowRight":
                     this.owner.engine.state.wordIndex++
+                    break
+                case "Escape":
+                    this.owner.abort()
+                    break
             }
         }
         else if (event.type === "pointerdown") {
@@ -49,6 +53,7 @@ export class MainScreen implements IScreen {
         this.engine.state.wordIndex = 0
         this.startTimer = performance.now()
         this.elapsed = 0
+        this.done = false
         window.addEventListener("keydown", this.eventHandler);
         window.addEventListener("pointerdown", this.eventHandler)
     }
@@ -63,10 +68,11 @@ export class MainScreen implements IScreen {
     }
 
     repaint(): void {
+        if (this.done)
+            return;
         const context = this.engine.canvas.getContext("2d")!;
         this.drawWord(context)
         if (this.elapsed < this.duration) {
-            this.done = false;
             this.drawProgressBar(context)
         } else {
             this.done = true;
@@ -95,6 +101,11 @@ export class MainScreen implements IScreen {
     }
 
     isDone(): boolean {
-        return this.done;
+        return this.done
+    }
+
+    abort(): void {
+        this.done = true
+        this.engine.state.actualDuration = this.elapsed / 1000
     }
 }

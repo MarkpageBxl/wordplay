@@ -36,8 +36,8 @@ export class ResultScreen implements IScreen {
     async init(): Promise<void> {
         this.done = false
         setTimeout(() => {
-            window.addEventListener("keydown", ev => this.eventHandler)
-            window.addEventListener("pointerdown", ev => this.eventHandler)
+            window.addEventListener("keydown", this.eventHandler)
+            window.addEventListener("pointerdown", this.eventHandler)
         }, 1000)
     }
 
