@@ -1,38 +1,49 @@
 import { GameEngine } from "../engine";
 import { IScreen } from "./screen";
 
+class ResultScreenEventHandler implements EventListenerObject {
+    private owner: ResultScreen;
+
+    constructor(owner: ResultScreen) {
+        this.owner = owner;
+    }
+
+    handleEvent(event: Event): void {
+        if (event instanceof KeyboardEvent) {
+            switch (event.code) {
+                case "Enter":
+                case "Space":
+                case "ArrowRight":
+                    this.owner.done = true
+            }
+        }
+        else if (event instanceof PointerEvent) {
+            this.owner.done = true
+        }
+    }
+}
+
 export class ResultScreen implements IScreen {
     engine: GameEngine;
     done: boolean = false
+    eventHandler: EventListenerObject
 
     constructor(engine: GameEngine) {
         this.engine = engine
+        this.eventHandler = new ResultScreenEventHandler(this)
     }
 
     async init(): Promise<void> {
         this.done = false
         setTimeout(() => {
-            window.addEventListener("keydown", ev => this.onKeydown(ev))
-            window.addEventListener("pointerdown", ev => this.onPointerdown(ev))
+            window.addEventListener("keydown", ev => this.eventHandler)
+            window.addEventListener("pointerdown", ev => this.eventHandler)
         }, 1000)
     }
 
-    private onKeydown(ev: KeyboardEvent) {
-        switch (ev.code) {
-            case "Enter":
-            case "Space":
-            case "ArrowRight":
-                this.done = true
-        }
-    }
-
-    private onPointerdown(ev: PointerEvent) {
-        this.done = true
-    }
-
     tearDown(): void {
-        window.removeEventListener("keydown", ev => this.onKeydown(ev))
-        window.removeEventListener("pointerdown", ev => this.onPointerdown(ev))
+        window.removeEventListener("keydown", this.eventHandler)
+        window.removeEventListener("pointerdown", this.eventHandler)
     }
 
     updateState(): void {

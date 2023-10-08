@@ -2,6 +2,29 @@ import { GameEngine } from "../engine";
 import { shuffle } from "../utils";
 import { IScreen } from "./screen";
 
+class MainScreenEventHandler implements EventListenerObject {
+    private owner: MainScreen
+
+    constructor(owner: MainScreen) {
+        this.owner = owner
+    }
+
+    handleEvent(event: Event): void {
+        if (event.type === "keydown") {
+            var keyboardEvent = event as KeyboardEvent
+            switch (keyboardEvent.code) {
+                case "Enter":
+                case "Space":
+                case "ArrowRight":
+                    this.owner.engine.state.wordIndex++
+            }
+        }
+        else if (event.type === "pointerdown") {
+            this.owner.engine.state.wordIndex++
+        }
+    }
+}
+
 export class MainScreen implements IScreen {
     engine: GameEngine
     duration: number
@@ -9,10 +32,12 @@ export class MainScreen implements IScreen {
     done: boolean = false
     elapsed: number = 0
     words: string[] = []
+    eventHandler: MainScreenEventHandler
 
     constructor(engine: GameEngine, duration: number) {
         this.engine = engine
         this.duration = duration * 1000
+        this.eventHandler = new MainScreenEventHandler(this);
     }
 
     async init(): Promise<void> {
@@ -24,26 +49,13 @@ export class MainScreen implements IScreen {
         this.engine.state.wordIndex = 0
         this.startTimer = performance.now()
         this.elapsed = 0
-        window.addEventListener("keydown", ev => this.onKeydown(ev))
-        window.addEventListener("pointerdown", ev => this.onPointerdown(ev))
+        window.addEventListener("keydown", this.eventHandler);
+        window.addEventListener("pointerdown", this.eventHandler)
     }
 
     tearDown(): void {
-        window.removeEventListener("keydown", ev => this.onKeydown(ev))
-        window.removeEventListener("pointerdown", ev => this.onPointerdown(ev))
-    }
-
-    private onKeydown(ev: KeyboardEvent) {
-        switch (ev.code) {
-            case "Enter":
-            case "Space":
-            case "ArrowRight":
-                this.engine.state.wordIndex++
-        }
-    }
-
-    private onPointerdown(ev: PointerEvent) {
-        this.engine.state.wordIndex++
+        window.removeEventListener("keydown", this.eventHandler);
+        window.removeEventListener("pointerdown", this.eventHandler)
     }
 
     updateState(): void {
