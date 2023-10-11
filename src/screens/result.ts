@@ -27,6 +27,8 @@ export class ResultScreen implements IScreen {
     engine: GameEngine;
     done: boolean = false
     eventHandler: EventListenerObject
+    scoreLine?: HTMLDivElement
+    speedLine?: HTMLDivElement
 
     constructor(engine: GameEngine) {
         this.engine = engine
@@ -39,29 +41,33 @@ export class ResultScreen implements IScreen {
             window.addEventListener("keydown", this.eventHandler)
             window.addEventListener("pointerdown", this.eventHandler)
         }, 1000)
+        const outerContainer = document.getElementById("outerContainer") as HTMLDivElement
+        outerContainer.replaceChildren()
+        const innerContainer = document.createElement("div") as HTMLDivElement
+        innerContainer.id = "innerContainer"
+        outerContainer.appendChild(innerContainer)
+        this.scoreLine = document.createElement("div")
+        this.scoreLine.id = "scoreLine"
+        this.speedLine = document.createElement("div")
+        this.speedLine.id = "speedLine"
+        innerContainer.appendChild(this.scoreLine)
+        innerContainer.appendChild(this.speedLine)
     }
 
     tearDown(): void {
         window.removeEventListener("keydown", this.eventHandler)
         window.removeEventListener("pointerdown", this.eventHandler)
         this.engine.state.actualDurationMs = 0
+        const outerContainer = document.getElementById("outerContainer") as HTMLDivElement
+        outerContainer.replaceChildren()
     }
 
     updateState(): void {
     }
 
     repaint(): void {
-        const context = this.engine.canvas.getContext("2d")!
-        const fontSize = Math.floor(96 * this.engine.canvas.height / 1080)
-        const sep = Math.floor(96 * 3 * this.engine.canvas.height / 1080)
-        context.font = `${fontSize}px serif`;
-        context.textAlign = "center"
-        context.textBaseline = "middle"
-        context.fillStyle = "black"
-        let x = this.engine.canvas.width / 2
-        let y = this.engine.canvas.height / 2
-        context.fillText(`${this.engine.state.wordIndex} mots lus`, x, y - sep)
-        context.fillText(`${this.engine.state.speed()} mots/min`, x, y)
+        this.scoreLine!.innerHTML = `${this.engine.state.wordIndex} mots lus`
+        this.speedLine!.innerHTML = `${this.engine.state.speed()} mots/min`
     }
 
     isDone(): boolean {

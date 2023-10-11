@@ -5,15 +5,13 @@ import { GameState } from "./state";
 import { ResultScreen } from "./screens/result";
 
 export class GameEngine {
-    canvas: HTMLCanvasElement
     screens: IScreen[] = []
     currentScreenIndex: number = 0
     state: GameState
 
-    constructor(canvas: HTMLCanvasElement) {
-        this.canvas = canvas
+    constructor() {
         this.state = new GameState(15);
-        let screen: IScreen = new CountdownScreen(this, 5)
+        let screen: IScreen = new CountdownScreen(5)
         this.screens.push(screen)
         screen = new MainScreen(this)
         this.screens.push(screen)
@@ -24,8 +22,6 @@ export class GameEngine {
     private async step(time: DOMHighResTimeStamp): Promise<void> {
         const screen = this.screens[this.currentScreenIndex]
         screen.updateState()
-        this.canvas.width = window.innerWidth
-        this.canvas.height = window.innerHeight
         screen.repaint()
         if (screen.isDone()) {
             screen.tearDown()

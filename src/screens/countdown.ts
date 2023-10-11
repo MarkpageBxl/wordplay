@@ -2,45 +2,61 @@ import { GameEngine } from '../engine'
 import { IScreen } from './screen'
 
 export class CountdownScreen implements IScreen {
-    engine: GameEngine
-    duration: number
+    durationSeconds: number
     startTimer: number = 0
     done: boolean = false
     elapsedSeconds: number = 0
+    canvas!: HTMLCanvasElement
+    counterSpan!: HTMLSpanElement
 
-    constructor(engine: GameEngine, duration: number) {
-        this.engine = engine
-        this.duration = duration
+    constructor(durationSeconds: number) {
+        this.durationSeconds = durationSeconds
     }
 
     async init(): Promise<void> {
         this.startTimer = performance.now()
         this.elapsedSeconds = 0
+        const outerContainer = document.getElementById("outerContainer") as HTMLDivElement
+        const counterDiv = document.createElement("div")
+        counterDiv.id = "counter"
+        this.counterSpan = document.createElement("span")
+        this.canvas = document.createElement("canvas")
+        this.canvas.width = 300;
+        this.canvas.height = 300;
+        this.canvas.style.position = "absolute"
+        counterDiv.appendChild(this.counterSpan)
+        outerContainer.appendChild(counterDiv)
+        outerContainer.appendChild(this.canvas)
     }
 
     tearDown(): void {
+        const outerContainer = document.getElementById("outerContainer") as HTMLDivElement
+        outerContainer.replaceChildren()
     }
 
     updateState(): void {
         this.elapsedSeconds = (performance.now() - this.startTimer) / 1000
     }
 
-    repaint(): void {
-        const valueDisplayed = Math.ceil(this.duration - this.elapsedSeconds)
-        const context = this.engine.canvas.getContext("2d")!;
-        const fontSize = Math.floor(96 * this.engine.canvas.height / 1080)
-        context.font = `${fontSize}px serif`;
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-
+    async repaint() {
+        const valueDisplayed = Math.ceil(this.durationSeconds - this.elapsedSeconds)
+        this.counterSpan.innerText = valueDisplayed.toString()
+        const context = this.canvas.getContext("2d")!;
+        context.clearRect(0, 0, this.canvas.width, this.canvas.height)
         if (valueDisplayed >= 1) {
             this.done = false;
-            context.fillText(valueDisplayed.toString(), this.engine.canvas.width / 2, this.engine.canvas.height / 2);
             context.strokeStyle = "red"
-            context.lineWidth = Math.floor(30 * this.engine.canvas.height / 1080)
-            const startAngle = ((this.duration - this.elapsedSeconds) % 1) * 2 * Math.PI
-            const radius = Math.floor(150 * this.engine.canvas.height / 1080)
-            context.arc(this.engine.canvas.width / 2, this.engine.canvas.height / 2, radius, startAngle, 0)
+            context.lineWidth = 20
+            let startAngle = ((this.durationSeconds - this.elapsedSeconds) % 1) * 2 * Math.PI
+            let endAngle = 0
+            const rotation = Math.PI / 2
+            startAngle -= rotation
+            endAngle -= rotation
+            const radius = 120
+            const x = this.canvas.width / 2
+            const y = this.canvas.height / 2
+            context.beginPath()
+            context.arc(x, y, radius, startAngle, endAngle)
             context.stroke()
         } else {
             this.done = true;
